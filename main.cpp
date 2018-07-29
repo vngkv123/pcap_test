@@ -7,7 +7,17 @@
 #include <net/ethernet.h>
 
 #define   IP_TEMP_SIZE 0x40
+
+#define   ICMP 1
+#define   IGMP 2
+#define   GGP 3
+#define   IP_IN_IP 4
+#define   ST 5
 #define   TCP 6
+#define   CBT 7
+
+/* so many protocol type ! */
+/* https://en.wikipedia.org/wiki/List_of_IP_protocol_numbers */
 
 typedef struct ether_header eth;
 typedef struct mac_addr{
@@ -97,23 +107,23 @@ void PacketCallbackFunction(uint8_t *args, const struct pcap_pkthdr *header, con
     mac_addr * source_mac = (mac_addr *)(pkt_data);
     mac_addr * dest_mac = (mac_addr *)(pkt_data + 6);
     printf("----------------------------------------------\n");
-    printf("Source MAC :");
+    printf("Source MAC : ");
     PacketMacPrint(source_mac);
-    printf("Dest MAC :");
+    printf("Dest MAC : ");
     PacketMacPrint(dest_mac);
     if(ip->protocol == TCP){ // TCP
       tcp_header * tcp = (tcp_header *)(ip + ip_length);
       printf("Source IP :");
       inet_ntop(AF_INET,(void *)(&ip->source_ip), tempIPSetter_1, IP_TEMP_SIZE);
       printf("%s\n",tempIPSetter_1);
-      printf("Port : %d\n",ntohs(tcp->source_port));  
+      printf("Port : %d\n",ntohs(tcp->source_port));
       printf("Dest IP :");
       inet_ntop(AF_INET,(void*)(&ip->dest_ip), tempIPSetter_2, IP_TEMP_SIZE);
       printf("%s\n", tempIPSetter_2);
       printf("Port : %d\n", ntohs(tcp->dest_port));
       uint8_t i;
       pkt_data += sizeof(eth) + sizeof(ip_header) + sizeof(tcp_header);
- 
+
       for(i = 0; (i < header->len + 1) && i < 16; i++){
            if((pkt_data[i] >= 33) && (pkt_data[i] <= 126)) // 아스키코드만 출력
                 printf(" %c", pkt_data[i]);
@@ -122,6 +132,9 @@ void PacketCallbackFunction(uint8_t *args, const struct pcap_pkthdr *header, con
       }
       puts("\n");
 
+    }
+    else{
+      printf("[-] Another type\n");
     }
     printf("----------------------------------------------\n");
   }
