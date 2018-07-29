@@ -125,7 +125,7 @@ void PacketCallbackFunction(uint8_t *args, const struct pcap_pkthdr *header, con
       pkt_data += sizeof(eth) + sizeof(ip_header) + sizeof(tcp_header);
 
       for(i = 0; (i < header->len + 1) && i < 16; i++){
-           if((pkt_data[i] >= 33) && (pkt_data[i] <= 126)) // 아스키코드만 출력
+           if((pkt_data[i] >= 33) && (pkt_data[i] <= 126))
                 printf(" %c", pkt_data[i]);
            else
                 printf(".");
